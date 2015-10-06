@@ -16,9 +16,9 @@ MonitoringProcess=(
 	'httpd' 'mysqld' 'java' 'Passenger' 'sshd'
 )
 EmergencyCommands=(
-	'service httpd restart'
-	'service mysqld restart'
-	'/etc/init.d/tomcat7 restart'
+	"service httpd restart"
+	"service mysqld restart"
+	"/etc/init.d/tomcat7 restart"
 )
 
 MaxUsingPMemPerBoundary=97
@@ -26,7 +26,7 @@ MaxUsingVRMemPerBoundary=70
 #MaxUsingDiskBoundary=1
 MaxUsingDiskBoundary=97
 #MaxMonitoringCnt=1
-MaxMonitoringCnt=72
+MaxMonitoringCnt=32
 NetworkInterface="eth0"
 
 initSSAMS() {
@@ -248,7 +248,7 @@ checkedPMem
 checkedVRMem
 isMemoryEmergency
 
-sleep 2
+sleep 1
 
 checkedDiskFree
 isDiskEmergency
@@ -258,7 +258,7 @@ checkedUptime
 
 counting
 
-sleep 2
+sleep 1
 
 if [ $NowMonitoringCnt -ge $MaxMonitoringCnt ]; then
 	makePreodicalMailContents
