@@ -168,7 +168,7 @@ isMemoryEmergency() {
 		EmergMesg=${EmergMesg}"Using Virtual Memory : ${UsingVRMem} M\n"
 		EmergMesg=${EmergMesg}"Using / Total VRMem Per : ${UsingVRMemPer} %\n\n"
 		if [ ${UsingVRMemPer} -ge ${MaxUsingVRMemPerBoundary} ]; then
-#			EmergencyProcessing
+			EmergencyProcessing
 			NotifyLev="EMERGENCY"
 			EmergMesg=${EmergMesg}"\n!! Notification Level : ${NotifyLev} !!\n"
 			EmergMesg=${EmergMesg}"[Using PMem Per] >= ${MaxUsingPMemPerBoundary} %\n"
