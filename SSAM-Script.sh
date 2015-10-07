@@ -6,11 +6,11 @@ mailingList=(
 #	"yourID@yourDomain.com"
 )
 
-Dir="/var/log/SSAMS"
-countFile="${Dir}/SSAMS.cnt"
-logFile="${Dir}/SSAMS.log"
-mailFile="${Dir}/SSAMS.mail"
-emergFile="${Dir}/SSAMS.emerg"
+Dir="/var/log/SSAM-Script"
+countFile="${Dir}/SSAM-Script.cnt"
+logFile="${Dir}/SSAM-Script.log"
+mailFile="${Dir}/SSAM-Script.mail"
+emergFile="${Dir}/SSAM-Script.emerg"
 
 MonitoringProcess=(
 	'httpd' 'mysqld' 'java' 'Passenger' 'sshd'
@@ -29,7 +29,7 @@ MaxUsingDiskBoundary=97
 MaxMonitoringCnt=32
 NetworkInterface="eth0"
 
-initSSAMS() {
+initSSAMScript() {
 	if [ ! -d ${Dir} ]; then
 		mkdir ${Dir}
 	fi
@@ -55,7 +55,7 @@ countingReset() {
 
 sendingMail() {
 	for mail in "${mailingList[@]}"; do
-		mail -s "[SSAMS] $1" ${mail} < "$2"
+		mail -s "[SSAMScript] $1" ${mail} < "$2"
 #		echo -e `cat ${mailFile}`
 	done
 }
@@ -99,7 +99,7 @@ makePreodicalMailContents() {
 	periodicMesg=${periodicMesg}${UpTime}
 	periodicMesg=${periodicMesg}"=================================================================================\n\n"
 	periodicMesg=${periodicMesg}"${DATE}\n"
-	periodicMesg=${periodicMesg}"!! SSAMS (rev $SSAMS_REV) Copyright by YoWu (uyu423@gmail.com) -\n"
+	periodicMesg=${periodicMesg}"!! SSAM-Script (rev $SSAMScript_REV) Copyright by YoWu (uyu423@gmail.com) -\n"
 	periodicMesg=${periodicMesg}"\n\nEnd Of Mail"
 }
 
@@ -188,7 +188,7 @@ isMemoryEmergency() {
 			EmergMesg=${EmergMesg}"[Using VRMem Per] >= ${MaxUsingVRMemPerBoundary} %\n"
 		fi
 		EmergMesg=${EmergMesg}"\n\n${DATE}\n"
-		EmergMesg=${EmergMesg}"!! SSAMS (rev $SSAMS_REV) Copyright by YoWu (uyu423@gmail.com) -\n"
+		EmergMesg=${EmergMesg}"!! SSAM-Script (rev $SSAMScript_REV) Copyright by YoWu (uyu423@gmail.com) -\n"
 		EmergMesg=${EmergMesg}"\n\nEnd Of Mail"
 		sendingEmergencyMail "!! ${NotifyLev} '${HOSTNAME}' Server Status Report: Out of Memory Soon !!" "${EmergMesg}"
 	fi
@@ -215,7 +215,7 @@ isDiskEmergency() {
 				EmergMesg=${EmergMesg}"!! Additional Information !!\n"
 				EmergMesg=${EmergMesg}"$ServerInfo\n\n"
 				EmergMesg=${EmergMesg}"${DATE}\n"
-				EmergMesg=${EmergMesg}"!! SSAMS (rev $SSAMS_REV) Copyright by YoWu (uyu423@gmail.com) -\n"
+				EmergMesg=${EmergMesg}"!! SSAM-Script (rev $SSAMScript_REV) Copyright by YoWu (uyu423@gmail.com) -\n"
 				EmergMesg=${EmergMesg}"\n\nEnd Of Mail"
 				sendingEmergencyMail "!! EMERGENCY '${HOSTNAME}' Server Status Report: Storage FULL Soon !!" "${EmergMesg}"
 			fi
@@ -234,7 +234,7 @@ makeServerInfomation() {
 }
 
 #Main Function Process
-SSAMS_REV="0.1"
+SSAMScript_REV="0.1"
 WhoAmI=`whoami`
 DATE="!! Server Status Checked Datetime : "`date`
 if [ "$WhoAmI" != "root" ]; then
