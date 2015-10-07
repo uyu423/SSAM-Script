@@ -115,7 +115,7 @@ makePreodicalMailContents() {
 	periodicMesg=${periodicMesg}"\n== Server Disk Free Status ==\n"
 	periodicMesg=${periodicMesg}"${freeDisksForMail[@]}"
 	periodicMesg=${periodicMesg}"==\n"
-	periodicMesg=${periodicMesg}"\n== Server Boot 5 Time Log ==\n"
+	periodicMesg=${periodicMesg}"\n== Server Boot Last 5 Time Log ==\n"
 	periodicMesg=${periodicMesg}${UpTime[@]}
 	periodicMesg=${periodicMesg}"\nLog End\n"
 	periodicMesg=${periodicMesg}"==\n\n"
