@@ -27,10 +27,10 @@ EmergencyCommands=(
 
 MaxUsingPMemPerBoundary=97
 MaxUsingVRMemPerBoundary=70
-#MaxUsingDiskBoundary=1
+#MaxUsingDiskBoundary=1	#for Testing
 MaxUsingDiskBoundary=97
-MaxMonitoringCnt=1
-#MaxMonitoringCnt=32
+MaxMonitoringCnt=1	#for Testing
+#MaxMonitoringCnt=128
 NetworkInterface="eth0"
 ########################################
 ########################################
@@ -94,19 +94,19 @@ sendingPreodicalMail() {
 }
 
 makePreodicalMailContents() {
-	periodicMesg=${periodicMesg}"\n\n==== Server Status Automatic Monitoring Script (rev 0.1) ====\n\n\n"
+	periodicMesg=${periodicMesg}"\n\n==== Server Status Automatic Monitoring Script (rev ${SSAMScript_REV}) ====\n\n\n"
 	periodicMesg=${periodicMesg}"\n== Server Default Informatione ==\n"
 	periodicMesg=${periodicMesg}"$ServerInfo\n"
 	periodicMesg=${periodicMesg}"==\n"
 	periodicMesg=${periodicMesg}"\n== Server Using Physical Memory Status ==\n"
-	periodicMesg=${periodicMesg}"Physical Memory(Real) Size : ${TotalPMem} M\n"
-	periodicMesg=${periodicMesg}"Physical Memory(Real) Used: ${UsingPMem} M\n"
-	periodicMesg=${periodicMesg}"Physical Mem(Real) Used % : ${UsingPMemPer} %\n"
+	periodicMesg=${periodicMesg}"Physical Memory(Real) Size\t: ${TotalPMem} M\n"
+	periodicMesg=${periodicMesg}"Physical Memory(Real) Used\t: ${UsingPMem} M\n"
+	periodicMesg=${periodicMesg}"Physical Mem(Real) Used %\t: ${UsingPMemPer} %\n"
 	periodicMesg=${periodicMesg}"==\n"
 	periodicMesg=${periodicMesg}"\n== Server Using Virtual Memory Status ==\n"
-	periodicMesg=${periodicMesg}"Virtual Memory(Swap) Size : ${TotalVRMem} M\n"
-	periodicMesg=${periodicMesg}"Virtual Memory(Swap) Used : ${UsingVRMem} M\n"
-	periodicMesg=${periodicMesg}"Virtual Mem(Swap) Used % : ${UsingVRMemPer} %\n"
+	periodicMesg=${periodicMesg}"Virtual Memory(Swap) Size\t: ${TotalVRMem} M\n"
+	periodicMesg=${periodicMesg}"Virtual Memory(Swap) Used\t: ${UsingVRMem} M\n"
+	periodicMesg=${periodicMesg}"Virtual Mem(Swap) Used %\t: ${UsingVRMemPer} %\n"
 	periodicMesg=${periodicMesg}"==\n"
 	periodicMesg=${periodicMesg}"\n== Server Process Status (ProcName UsedMem) ==\n"
 	periodicMesg=${periodicMesg}"${ProcessList}"
@@ -117,9 +117,10 @@ makePreodicalMailContents() {
 	periodicMesg=${periodicMesg}"==\n"
 	periodicMesg=${periodicMesg}"\n== Server Boot 5 Time Log ==\n"
 	periodicMesg=${periodicMesg}${UpTime[@]}
+	periodicMesg=${periodicMesg}"\nLog End\n"
 	periodicMesg=${periodicMesg}"==\n\n"
 	periodicMesg=${periodicMesg}"${DATE}\n\n"
-	periodicMesg=${periodicMesg}"==== SSAM-Script (rev $SSAMScript_REV) Copyright by YoWu (uyu423@gmail.com) ====\n"
+	periodicMesg=${periodicMesg}"==== SSAM-Script (rev $SSAMScript_REV) has a GPL v2 License (https://github.com/uyu423/SSAM-Script) ====\n"
 	periodicMesg=${periodicMesg}"\n\nEnd Of Report"
 }
 ########################################
@@ -196,12 +197,12 @@ isMemoryEmergency() {
 	if [ ${UsingPMemPer} -ge ${MaxUsingPMemPerBoundary} ]; then
 		EmergMesg=${EmergMesg}"\n!! Out of Memory SOON !!\n\n"
 		EmergMesg=${EmergMesg}"!! Server Memory Status \n\n"
-		EmergMesg=${EmergMesg}"Physical Memory(Real) Size : ${TotalPMem} M\n"
-		EmergMesg=${EmergMesg}"Physical Memory(Real) Used : ${UsingPMem} M\n"
-		EmergMesg=${EmergMesg}"Physical Mem(Real) % : ${UsingPMemPer} %\n\n"
-		EmergMesg=${EmergMesg}"Virtual Memory(Swap) Size : ${TotalVRMem} M\n"
-		EmergMesg=${EmergMesg}"Virtual Memory(Swap) Used : ${UsingVRMem} M\n"
-		EmergMesg=${EmergMesg}"Virtual Mem(Swap) Used % : ${UsingVRMemPer} %\n\n"
+		EmergMesg=${EmergMesg}"Physical Memory(Real) Size\t: ${TotalPMem} M\n"
+		EmergMesg=${EmergMesg}"Physical Memory(Real) Used\t: ${UsingPMem} M\n"
+		EmergMesg=${EmergMesg}"Physical Mem(Real) %\t: ${UsingPMemPer} %\n\n"
+		EmergMesg=${EmergMesg}"Virtual Memory(Swap) Size\t: ${TotalVRMem} M\n"
+		EmergMesg=${EmergMesg}"Virtual Memory(Swap) Used\t: ${UsingVRMem} M\n"
+		EmergMesg=${EmergMesg}"Virtual Mem(Swap) Used %\t: ${UsingVRMemPer} %\n\n"
 		if [ ${UsingVRMemPer} -ge ${MaxUsingVRMemPerBoundary} ]; then
 			MemoryEmergencyProcessing
 			NotifyLev="EMERGENCY"
@@ -248,7 +249,7 @@ isDiskEmergency() {
 			if [ $usingDiskPer -ge $MaxUsingDiskBoundary ]; then
 #				DiskEmergencyProcessing	# Not Define
 				EmergMesg=${EmergMesg}"\n!! Server Storage is FULL Soon !!\n\n"
-				EmergMesg=${EmergMesg}"`echo -e ${freeDisk} | awk '{ print $1 }'`\n"
+				EmergMesg=${EmergMesg}"`echo -e \"${freeDisk}\" | awk '{ print $1, $6 }'`\n"
 				EmergMesg=${EmergMesg}"Total : ${totalDiskSize} / Using : ${usingDiskSize} M/ Per : ${usingDiskPer} %\n\n"
 				EmergMesg=${EmergMesg}"!! Please Clean up Server Storage !!\n\n"
 				EmergMesg=${EmergMesg}"!! Additional Information !!\n"
@@ -271,14 +272,14 @@ makeServerInfomation() {
 		(( i++ ))
 	done < <(find /etc/*-release | xargs cat | head -6)
 	ServerInfo=""
-	ServerInfo=${ServerInfo}"Hostname : $HOSTNAME\n"
-	ServerInfo=${ServerInfo}"Server IP Address : `ip a s ${NetworkInterface} | awk '/inet / { print $2 }'`\n"
+	ServerInfo=${ServerInfo}"Hostname\t: $HOSTNAME\n"
+	ServerInfo=${ServerInfo}"Server IP Address\t: `ip a s ${NetworkInterface} | awk '/inet / { print $2 }'`\n"
 #	ServerInfo=${ServerInfo}"Public IP Address : `curl bot.whatismyipaddress.com 2> /dev/null`\n"	#slowly
-	ServerInfo=${ServerInfo}"Public IP Address : `wget http://ipecho.net/plain -O - -q ; echo 2> /dev/null`\n"
-	ServerInfo=${ServerInfo}"Shell Type : $SHELL\n"
-	ServerInfo=${ServerInfo}"Machine Type : $MACHTYPE\n"
-	ServerInfo=${ServerInfo}"Uname ALL : `uname -a`\n"
-	ServerInfo=${ServerInfo}"Release Information : \n${ReleaseInfo[@]}"
+	ServerInfo=${ServerInfo}"Public IP Address\t: `wget http://ipecho.net/plain -O - -q ; echo 2> /dev/null`\n"
+	ServerInfo=${ServerInfo}"Shell Type\t: $SHELL\n"
+	ServerInfo=${ServerInfo}"Machine Type\t: $MACHTYPE\n"
+	ServerInfo=${ServerInfo}"Uname ALL\t: `uname -a`\n"
+	ServerInfo=${ServerInfo}"Release Information\t: \n${ReleaseInfo[@]}"
 }
 
 ########################################
@@ -293,7 +294,6 @@ if [ "$WhoAmI" != "root" ]; then
 fi
 
 initSSAMScript
-makeServerInfomation
 
 checkedPMem
 checkedVRMem
@@ -313,6 +313,7 @@ sleep 1
 
 # Periodical reports sent checks
 if [ $NowMonitoringCnt -ge $MaxMonitoringCnt ]; then
+	makeServerInfomation
 	makePreodicalMailContents
 	sendingPreodicalMail
 	countingReset
