@@ -11,8 +11,8 @@ SSAM(Server Status Automatic Monitoring) Script, server monitoring and automated
 
 ## Installaion
 <pre>
-$ sudo git clone https://github.com/uyu423/SSAM-Script.git /root/scripts/
-$ sudo chmod 700 /root/scripts/SSAM-Script.sh
+$ sudo git clone https://github.com/uyu423/SSAM-Script.git /root/scripts/SSAM-Script
+$ sudo chmod 700 /root/scripts/SSAM-Script/SSAM-Script.sh
 </pre>
 
 ## Set a User Custom values
@@ -33,7 +33,7 @@ $ sudo chmod 700 /root/scripts/SSAM-Script.sh
 ## SSAM-Script in CRONTAB Setup
 * The following code sample checks the server every five minutes
 <pre>
-$ sudo echo "*/5 * * * * bash /root/scripts/SSAM-Script.sh > /var/log/SSAM-Script/SSAM-Script.log 2> /var/log/SSAM-Script/SSAM-Script.err" >> /var/spool/cron/crontabs/root
+$ sudo echo "*/5 * * * * bash /root/scripts/SSAM-Script/SSAM-Script.sh > /var/log/SSAM-Script/SSAM-Script.log 2> /var/log/SSAM-Script/SSAM-Script.err" >> /var/spool/cron/crontabs/root
 </pre>
 
 * Additional, the recommendations Please contact uyu423@gmail.com or github issue tab
