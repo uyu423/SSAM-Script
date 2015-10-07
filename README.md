@@ -33,7 +33,10 @@ $ sudo chmod 700 /root/scripts/SSAM-Script/SSAM-Script.sh
 ## SSAM-Script in CRONTAB Setup
 * The following code sample checks the server every five minutes
 <pre>
+// Ubuntu 15.04
 $ sudo echo "*/5 * * * * bash /root/scripts/SSAM-Script/SSAM-Script.sh > /var/log/SSAM-Script/SSAM-Script.log 2> /var/log/SSAM-Script/SSAM-Script.err" >> /var/spool/cron/crontabs/root
+// Centos 5.11
+$ sudo echo "*/5 * * * * bash /root/scripts/SSAM-Script/SSAM-Script.sh > /var/log/SSAM-Script/SSAM-Script.log 2> /var/log/SSAM-Script/SSAM-Script.err" >> /var/spool/cron/root
 </pre>
 
 * Additional, the recommendations Please contact uyu423@gmail.com or github issue tab
