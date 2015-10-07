@@ -242,6 +242,7 @@ if [ "$WhoAmI" != "root" ]; then
 	exit
 fi
 
+initSSAMScript
 makeServerInfomation
 
 checkedPMem
