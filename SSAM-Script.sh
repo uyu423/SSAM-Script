@@ -285,7 +285,7 @@ makeServerInfomation() {
 ########################################
 #### Main Function Process #############
 ########################################
-SSAMScript_REV="0.1.1"
+SSAMScript_REV="0.1.2"
 WhoAmI=`whoami`
 DATE="!! Server Status Checked Datetime : "`date`
 if [ "$WhoAmI" != "root" ]; then
