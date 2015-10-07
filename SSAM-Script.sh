@@ -29,8 +29,8 @@ MaxUsingPMemPerBoundary=97
 MaxUsingVRMemPerBoundary=70
 #MaxUsingDiskBoundary=1	#for Testing
 MaxUsingDiskBoundary=97
-MaxMonitoringCnt=1	#for Testing
-#MaxMonitoringCnt=128
+#MaxMonitoringCnt=1	#for Testing
+MaxMonitoringCnt=128
 NetworkInterface="eth0"
 ########################################
 ########################################
