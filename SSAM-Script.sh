@@ -25,10 +25,10 @@ EmergencyCommands=(
 #	"init 6"
 )
 
-MaxUsingPMemPerBoundary=97
+MaxUsingPMemPerBoundary=95
 MaxUsingVRMemPerBoundary=70
 #MaxUsingDiskBoundary=1	#for Testing
-MaxUsingDiskBoundary=97
+MaxUsingDiskBoundary=95
 #MaxMonitoringCnt=1	#for Testing
 MaxMonitoringCnt=128
 NetworkInterface="eth0"
