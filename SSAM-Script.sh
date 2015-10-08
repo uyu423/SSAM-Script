@@ -40,10 +40,11 @@ NetworkInterface="eth0"
 #### Script Value Settings #############
 ########################################
 Dir="/var/log/SSAM-Script"
-countFile="${Dir}/SSAM-Script.cnt"
-logFile="${Dir}/SSAM-Script.log"
-mailFile="${Dir}/SSAM-Script.mail"
-emergFile="${Dir}/SSAM-Script.emerg"
+FileName="SSAM-Script"
+countFile="${Dir}/${FileName}.cnt"
+logFile="${Dir}/${FileName}.log"
+mailFile="${Dir}/${FileName}.mail"
+emergFile="${Dir}/${FileName}.emerg"
 ########################################
 
 ########################################
