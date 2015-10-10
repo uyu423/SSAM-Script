@@ -79,7 +79,8 @@ counting() {
 }
 
 countingReset() {
-	rm -rf ${countFile}
+#	rm -rf ${countFile}
+	echo -e "0" > ${countFile}
 }
 ########################################
 
