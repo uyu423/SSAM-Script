@@ -1,7 +1,9 @@
 #!/bin/bash
 
 ########################################
-#### User Custom Value Settings ########
+#### User Custom Value Settings      ###
+#### Autor : Yowu (uyu423@gmail.com) ###
+#### Github : uyu423/SSAM-Script     ###
 ########################################
 #SenderName="SSAMS"
 mailingList=(
@@ -27,11 +29,17 @@ EmergencyCommands=(
 
 MaxUsingPMemPerBoundary=95
 MaxUsingVRMemPerBoundary=70
-#MaxUsingDiskBoundary=1	#for Testing
 MaxUsingDiskBoundary=95
-#MaxMonitoringCnt=1	#for Testing
 MaxMonitoringCnt=128
 NetworkInterface="eth0"
+
+# For Test Command " $ sudo ./SSAM-Script.sh test "
+env=$1
+if [ "${env}" == "test" ]; then
+	MaxMonitoringCnt=1
+	MaxUsingPMemPerBoundary=1
+#	MaxUsingDiskBoundary=1	#for Testing
+fi
 ########################################
 ########################################
 
@@ -77,11 +85,16 @@ countingReset() {
 
 ########################################
 sendingMail() {
-	for mail in "${mailingList[@]}"; do
-#		mail -a "From: ${SenderName} <${WhoAmI}@${HOSTNAME}>" -s "[SSAM-Script] $1" ${mail} < "$2"
-		mail -s "[SSAM-Script] $1" ${mail} < "$2"
-#		echo -e `cat ${mailFile}`
-	done
+# if env == "test" not sending meail. only showing terminal.
+	if [ "${env}" == "test" ]; then
+		echo -e "${periodicMesg}"
+		echo -e "${EmergMesg}"
+		return
+	else
+		for mail in "${mailingList[@]}"; do
+			mail -s "[SSAM-Script] $1" ${mail} < "$2"
+		done
+	fi	
 }
 
 sendingEmergencyMail() {
@@ -100,23 +113,23 @@ makePreodicalMailContents() {
 	periodicMesg=${periodicMesg}"$ServerInfo\n"
 	periodicMesg=${periodicMesg}"==\n"
 	periodicMesg=${periodicMesg}"\n== Server Using Physical Memory Status ==\n"
-	periodicMesg=${periodicMesg}"Physical Memory(Real) Size\t: ${TotalPMem} M\n"
-	periodicMesg=${periodicMesg}"Physical Memory(Real) Used\t: ${UsingPMem} M\n"
-	periodicMesg=${periodicMesg}"Physical Mem(Real) Used %\t: ${UsingPMemPer} %\n"
+	periodicMesg=${periodicMesg}"Physical Memory(Real) Size : ${TotalPMem} M\n"
+	periodicMesg=${periodicMesg}"Physical Memory(Real) Used : ${UsingPMem} M\n"
+	periodicMesg=${periodicMesg}"Physical Mem(Real) Used % : ${UsingPMemPer} %\n"
 	periodicMesg=${periodicMesg}"==\n"
 	periodicMesg=${periodicMesg}"\n== Server Using Virtual Memory Status ==\n"
-	periodicMesg=${periodicMesg}"Virtual Memory(Swap) Size\t: ${TotalVRMem} M\n"
-	periodicMesg=${periodicMesg}"Virtual Memory(Swap) Used\t: ${UsingVRMem} M\n"
-	periodicMesg=${periodicMesg}"Virtual Mem(Swap) Used %\t: ${UsingVRMemPer} %\n"
+	periodicMesg=${periodicMesg}"Virtual Memory(Swap) Size : ${TotalVRMem} M\n"
+	periodicMesg=${periodicMesg}"Virtual Memory(Swap) Used : ${UsingVRMem} M\n"
+	periodicMesg=${periodicMesg}"Virtual Mem(Swap) Used % : ${UsingVRMemPer} %\n"
 	periodicMesg=${periodicMesg}"==\n"
-	periodicMesg=${periodicMesg}"\n== Server Process Status (ProcName UsedMem) ==\n"
+	periodicMesg=${periodicMesg}"\n== Server Process Status (NAME USEDMEM) ==\n"
 	periodicMesg=${periodicMesg}"${ProcessList}"
 #	periodicMesg=${periodicMesg}"Others ${otherProcessSize} M\n"
 	periodicMesg=${periodicMesg}"==\n"
-	periodicMesg=${periodicMesg}"\n== Server Disk Free Status ==\n"
+	periodicMesg=${periodicMesg}"\n== Server Disk Partition Status ==\n"
 	periodicMesg=${periodicMesg}"${freeDisksForMail[@]}"
 	periodicMesg=${periodicMesg}"==\n"
-	periodicMesg=${periodicMesg}"\n== Server Boot Last 5 Time Log ==\n"
+	periodicMesg=${periodicMesg}"\n== Server Boot Time Last 5 Log ==\n"
 	periodicMesg=${periodicMesg}${UpTime[@]}
 	periodicMesg=${periodicMesg}"\nLog End\n"
 	periodicMesg=${periodicMesg}"==\n\n"
@@ -198,12 +211,14 @@ isMemoryEmergency() {
 	if [ ${UsingPMemPer} -ge ${MaxUsingPMemPerBoundary} ]; then
 		EmergMesg=${EmergMesg}"\n!! Out of Memory SOON !!\n\n"
 		EmergMesg=${EmergMesg}"!! Server Memory Status \n\n"
-		EmergMesg=${EmergMesg}"Physical Memory(Real) Size\t: ${TotalPMem} M\n"
-		EmergMesg=${EmergMesg}"Physical Memory(Real) Used\t: ${UsingPMem} M\n"
-		EmergMesg=${EmergMesg}"Physical Mem(Real) %\t: ${UsingPMemPer} %\n\n"
-		EmergMesg=${EmergMesg}"Virtual Memory(Swap) Size\t: ${TotalVRMem} M\n"
-		EmergMesg=${EmergMesg}"Virtual Memory(Swap) Used\t: ${UsingVRMem} M\n"
-		EmergMesg=${EmergMesg}"Virtual Mem(Swap) Used %\t: ${UsingVRMemPer} %\n\n"
+		EmergMesg=${EmergMesg}"Physical Memory(Real) Size : ${TotalPMem} M\n"
+		EmergMesg=${EmergMesg}"Physical Memory(Real) Used : ${UsingPMem} M\n"
+		EmergMesg=${EmergMesg}"Physical Mem(Real) % : ${UsingPMemPer} %\n\n"
+		EmergMesg=${EmergMesg}"Virtual Memory(Swap) Size : ${TotalVRMem} M\n"
+		EmergMesg=${EmergMesg}"Virtual Memory(Swap) Used : ${UsingVRMem} M\n"
+		EmergMesg=${EmergMesg}"Virtual Mem(Swap) Used % : ${UsingVRMemPer} %\n\n"
+		EmergMesg=${EmergMesg}"!! Server Process Status \n\n"
+		EmergMesg=${EmergMesg}"${ProcessList}\n\n"
 		if [ ${UsingVRMemPer} -ge ${MaxUsingVRMemPerBoundary} ]; then
 			MemoryEmergencyProcessing
 			NotifyLev="EMERGENCY"
@@ -225,7 +240,7 @@ isMemoryEmergency() {
 			EmergMesg=${EmergMesg}"[Using VRMem Per] >= ${MaxUsingVRMemPerBoundary} %\n"
 		fi
 		EmergMesg=${EmergMesg}"\n\n${DATE}\n"
-		EmergMesg=${EmergMesg}"!! SSAM-Script (rev $SSAMScript_REV) Copyright by YoWu (uyu423@gmail.com) -\n"
+		EmergMesg=${EmergMesg}"!! SSAM-Script (rev $SSAMScript_REV) has a GPL v2 License (https://github.com/uyu423/SSAM-Script) -\n"
 		EmergMesg=${EmergMesg}"\n\nEnd Of Report"
 		sendingEmergencyMail "${NotifyLev} '${HOSTNAME}' Server Status Report: Out of Memory Soon !!" "${EmergMesg}"
 	fi
@@ -256,7 +271,7 @@ isDiskEmergency() {
 				EmergMesg=${EmergMesg}"!! Additional Information !!\n"
 				EmergMesg=${EmergMesg}"${ServerInfo}\n\n"
 				EmergMesg=${EmergMesg}"${DATE}\n"
-				EmergMesg=${EmergMesg}"!! SSAM-Script (rev $SSAMScript_REV) Copyright by YoWu (uyu423@gmail.com) -\n"
+				EmergMesg=${EmergMesg}"!! SSAM-Script (rev $SSAMScript_REV) has a GPL v2 License (https://github.com/uyu423/SSAM-Script) -\n"
 				EmergMesg=${EmergMesg}"\n\nEnd Of Report"
 				sendingEmergencyMail "EMERGENCY '${HOSTNAME}' Server Status Report: Storage FULL Soon !!" "${EmergMesg}"
 			fi
@@ -273,20 +288,20 @@ makeServerInfomation() {
 		(( i++ ))
 	done < <(find /etc/*-release | xargs cat | head -6)
 	ServerInfo=""
-	ServerInfo=${ServerInfo}"Hostname\t: $HOSTNAME\n"
-	ServerInfo=${ServerInfo}"Server IP Address\t: `ip a s ${NetworkInterface} | awk '/inet / { print $2 }'`\n"
+	ServerInfo=${ServerInfo}"Hostname : ${HOSTNAME}\n"
+	ServerInfo=${ServerInfo}"Server IP Address : `/sbin/ip a s ${NetworkInterface} | awk '/inet / { print $2 }'`\n"
 #	ServerInfo=${ServerInfo}"Public IP Address : `curl bot.whatismyipaddress.com 2> /dev/null`\n"	#slowly
-	ServerInfo=${ServerInfo}"Public IP Address\t: `wget http://ipecho.net/plain -O - -q ; echo 2> /dev/null`\n"
-	ServerInfo=${ServerInfo}"Shell Type\t: $SHELL\n"
-	ServerInfo=${ServerInfo}"Machine Type\t: $MACHTYPE\n"
-	ServerInfo=${ServerInfo}"Uname ALL\t: `uname -a`\n"
-	ServerInfo=${ServerInfo}"Release Information\t: \n${ReleaseInfo[@]}"
+	ServerInfo=${ServerInfo}"Public IP Address : `wget http://ipecho.net/plain -O - -q ; echo 2> /dev/null`\n"
+	ServerInfo=${ServerInfo}"Shell Type : ${SHELL}\n"
+	ServerInfo=${ServerInfo}"Machine Type : ${MACHTYPE}\n"
+	ServerInfo=${ServerInfo}"Uname ALL : `uname -a`\n"
+	ServerInfo=${ServerInfo}"Release Information : ${ReleaseInfo[@]}"
 }
 
 ########################################
 #### Main Function Process #############
 ########################################
-SSAMScript_REV="0.1.2"
+SSAMScript_REV="0.1.3"
 WhoAmI=`whoami`
 DATE="!! Server Status Checked Datetime : "`date`
 if [ "$WhoAmI" != "root" ]; then
@@ -296,6 +311,9 @@ fi
 
 initSSAMScript
 
+checkedProc
+checkedUptime
+
 checkedPMem
 checkedVRMem
 isMemoryEmergency
@@ -304,9 +322,6 @@ sleep 1
 
 checkedDiskFree
 isDiskEmergency
-
-checkedProc
-checkedUptime
 
 counting
 
