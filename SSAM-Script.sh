@@ -1,9 +1,15 @@
 #!/bin/bash
 
 ########################################
-#### User Custom Value Settings      ###
+#### Server Status Automatic        ####
+#### Monitoring Script(SSAM-Script) ####
+########################################
 #### Autor : Yowu (uyu423@gmail.com) ###
 #### Github : uyu423/SSAM-Script     ###
+########################################
+
+########################################
+#### User Custom Value Settings     ####
 ########################################
 #SenderName="SSAMS"
 mailingList=(
