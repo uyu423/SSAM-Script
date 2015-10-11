@@ -27,10 +27,17 @@ EmergencyCommands=(
 #	"init 6"
 )
 
+AllowIpList=(
+	"127.0.0.1"
+	"192.168.0.*"
+#	"203.229.*"
+)
+
 MaxUsingPMemPerBoundary=95
 MaxUsingVRMemPerBoundary=70
 MaxUsingDiskBoundary=95
 MaxMonitoringCnt=128
+LoginHistoryCount=10
 NetworkInterface="eth0"
 
 # For Test Command " $ sudo ./SSAM-Script.sh test "
@@ -87,15 +94,20 @@ countingReset() {
 ########################################
 sendingMail() {
 # if env == "test" not sending meail. only showing terminal.
+	for index in ${!mailingList[*]}; do
+		if [ ${index} -ne 0 ]; then
+			mailingListString=${mailingListString}", "
+		fi	
+		mailingListString=${mailingListString}"${mailingList[$index]}"
+	done
 	if [ "${env}" == "test" ]; then
 		echo -e "${periodicMesg}"
 		echo -e "${EmergMesg}"
-		return
+		echo $mailingListString
 	else
-		for mail in "${mailingList[@]}"; do
-			mail -s "[SSAM-Script] $1" ${mail} < "$2"
-		done
+		mail -s "[SSAM-Script] $1" ${mailingListString} < "$2"
 	fi	
+	mailingListString="";
 }
 
 sendingEmergencyMail() {
@@ -129,6 +141,10 @@ makePreodicalMailContents() {
 	periodicMesg=${periodicMesg}"==\n"
 	periodicMesg=${periodicMesg}"\n== Server Disk Partition Status ==\n"
 	periodicMesg=${periodicMesg}"${freeDisksForMail[@]}"
+	periodicMesg=${periodicMesg}"==\n"
+	periodicMesg=${periodicMesg}"\n== Server Login History ==\n"
+	periodicMesg=${periodicMesg}"Allow IP List : ${AllowIpListPretty}\n"
+	periodicMesg=${periodicMesg}"${loginHistorys[@]}"
 	periodicMesg=${periodicMesg}"==\n"
 	periodicMesg=${periodicMesg}"\n== Server Boot Time Last 5 Log ==\n"
 	periodicMesg=${periodicMesg}${UpTime[@]}
@@ -177,17 +193,27 @@ checkedProc() {
 checkedDiskFree() {
 	i=0
 	while read line; do
-		freeDisks[$i]="$line\n"
-		(( i++ ))
+		freeDisks[$i]="$line\n"; (( i++ ))
 	done < <(df -m | grep -v Filesystem)
 	i=0
 	while read line; do
-		freeDisksForMail[$i]="$line\n"
-		(( i++ ))
+		freeDisksForMail[$i]="$line\n"; (( i++ ))
 	done < <(df -h)
 }
 ########################################
 
+########################################
+checkedLoginHistory() {
+	for index in ${!AllowIpList[*]}; do
+		AllowIpListString=${AllowIpListString}"|${AllowIpList[$index]}"
+		AllowIpListPretty=${AllowIpListPretty}" / ${AllowIpList[$index]}"
+	done
+	i=0; while read line; do
+		loginHistorys[$i]="$line\n"; (( i++ ))
+	done < <(last | egrep -v "(reboot${AllowIpListString})" | head -$1)
+}
+
+########################################
 
 ########################################
 checkedUptime() {
@@ -205,7 +231,15 @@ MemoryEmergencyProcessing() {
 	done
 }
 
+getAllProcessInfo() {
+	i=0; while read line; do
+		allProcInfo[$i]="$line\n"
+		(( i++ ))
+	done < <(ps -eo user,rss,size,vsize,pmem,pcpu,comm --sort -rss | head -n $1)
+}
+
 isMemoryEmergency() {
+	getAllProcessInfo 30
 	EmergMesg=""
 #	UsingPMemPer=100
 #	UsingVRMemPer=100
@@ -218,8 +252,10 @@ isMemoryEmergency() {
 		EmergMesg=${EmergMesg}"Virtual Memory(Swap) Size : ${TotalVRMem} M\n"
 		EmergMesg=${EmergMesg}"Virtual Memory(Swap) Used : ${UsingVRMem} M\n"
 		EmergMesg=${EmergMesg}"Virtual Mem(Swap) Used % : ${UsingVRMemPer} %\n\n"
-		EmergMesg=${EmergMesg}"!! Server Process Status \n\n"
+		EmergMesg=${EmergMesg}"!! Server Process Status (by User Process list)\n"
 		EmergMesg=${EmergMesg}"${ProcessList}\n\n"
+		EmergMesg=${EmergMesg}"!! Server Process Status (by System ps command)\n"
+		EmergMesg=${EmergMesg}"${allProcInfo[@]}\n\n"
 		if [ ${UsingVRMemPer} -ge ${MaxUsingVRMemPerBoundary} ]; then
 			MemoryEmergencyProcessing
 			NotifyLev="EMERGENCY"
@@ -302,7 +338,7 @@ makeServerInfomation() {
 ########################################
 #### Main Function Process #############
 ########################################
-SSAMScript_REV="0.1.3"
+SSAMScript_REV="0.2.0"
 WhoAmI=`whoami`
 DATE="!! Server Status Checked Datetime : "`date`
 if [ "$WhoAmI" != "root" ]; then
@@ -314,6 +350,7 @@ initSSAMScript
 
 checkedProc
 checkedUptime
+checkedLoginHistory $LoginHistoryCount
 
 checkedPMem
 checkedVRMem
