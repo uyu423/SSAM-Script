@@ -27,8 +27,9 @@ MonitoringProcess=(
 	'sshd'
 )
 EmergencyCommands=(
-	"service httpd restart"
-	"service mysqld restart"
+	"`which service` apache2 restart"
+	"`which service` mysqld restart"
+#	"`which service` httpd restart"
 #	"/etc/init.d/tomcat7 restart"
 #	"init 6"
 )
@@ -40,7 +41,7 @@ AllowIpList=(
 )
 
 MaxUsingPMemPerBoundary=95
-MaxUsingVRMemPerBoundary=70
+MaxUsingVRMemPerBoundary=50
 MaxUsingDiskBoundary=95
 MaxMonitoringCnt=128
 LoginHistoryCount=10
@@ -50,7 +51,8 @@ NetworkInterface="eth0"
 env=$1
 if [ "${env}" == "test" ]; then
 	MaxMonitoringCnt=1
-	MaxUsingPMemPerBoundary=1
+	MaxUsingPMemPerBoundary=0
+	MaxUsingVRMemPerBoundary=0
 #	MaxUsingDiskBoundary=1	#for Testing
 fi
 ########################################
@@ -233,7 +235,7 @@ checkedUptime() {
 ########################################
 MemoryEmergencyProcessing() {
 	for Comm in "${EmergencyCommands[@]}"; do
-		${Comm}
+		${Comm} >> "/home/uyu423/git/SSAM-Script/comm.log" 2> "/home/uyu423/git/SSAM-Script/comm.err"
 	done
 }
 
