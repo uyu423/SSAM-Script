@@ -235,7 +235,7 @@ checkedUptime() {
 ########################################
 MemoryEmergencyProcessing() {
 	for Comm in "${EmergencyCommands[@]}"; do
-		${Comm} >> "/home/uyu423/git/SSAM-Script/comm.log" 2> "/home/uyu423/git/SSAM-Script/comm.err"
+		${Comm}
 	done
 }
 
